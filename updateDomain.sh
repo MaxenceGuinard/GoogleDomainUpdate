@@ -1,14 +1,17 @@
 #!/bin/bash
 
+PWD="$(pwd)/"
+
 DOMAINFILE="domain.txt"
 IPFILE="ip.txt"
 
 if [ ! -f $DOMAINFILE ]; then
-    echo > ${DOMAINFILE}
+    > ${DOMAINFILE}
 fi
 if [ ! -f $IPFILE ]; then
- echo > ${IPFILE}
+    > ${IPFILE}
 fi
+FILENAME=$(basename "$0")
 DOMAIN[2]=""
 IP=$(dig @resolver1.opendns.com A myip.opendns.com +short -4)
 nbrRow=$(wc -l < ${DOMAINFILE})
@@ -19,21 +22,35 @@ PWDVAR="/var/www/"
 
 help()
 {
-    echo -e "  updateDomain update all the sub domain registered\n"
-    echo -e "\n  updateDomain [username] [password] [domain] add domain and create virtual host for Apache2"
-    echo -e "  -show, display all the domain registered\n"
+    echo -e "\n  updateDomain update all the sub domain registered"
+    echo -e "  updateDomain [username] [password] [domain] add domain"
+    echo -e "  -show, display all the domain registered"
+    echo -e "  -cron, add the cron line into crontab to update domains each hour"
     echo -e "  -h, --help display this help and exit\n"
     exit
 }
+
+if [[ $1 == -show ]]; then
+    cat ${PWD}${DOMAINFILE}
+    exit
+fi
+
+if [[ $1 == -cron ]]; then
+    clear
+    echo -e "Please copy this line:\n\n0 * * * * bash ${PWD}${FILENAME}\n\nThen paste it at the end of the crontab file ans save"
+    read pause
+    sudo crontab -e 
+    exit
+fi
 
 if [ $# == 3 ] || [ $# == 2 ]; then
     DOMAIN[0]=$1
     DOMAIN[1]=$2
     DOMAIN[2]=$3
 
-    echo ${DOMAIN[0]} ${DOMAIN[1]} ${DOMAIN[2]}  >> ${DOMAINFILE}
+    echo ${DOMAIN[0]} ${DOMAIN[1]} ${DOMAIN[2]}  >> ${PWD}${DOMAINFILE}
 
-    echo -e Line \'${DOMAIN[0]} ${DOMAIN[1]} ${DOMAIN[2]}\' has been added to ${DOMAINFILE}
+    echo -e Line \'${DOMAIN[0]} ${DOMAIN[1]} ${DOMAIN[2]}\' has been added to ${PWD}${DOMAINFILE}
     
     read pause
     clear
