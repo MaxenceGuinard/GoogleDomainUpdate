@@ -1,21 +1,22 @@
 #!/bin/bash
 
-PWD="$(pwd)/"
-
+PWD="/home/maxence/Documents/"
 DOMAINFILE="domain.txt"
 IPFILE="ip.txt"
 
-if [ ! -f $DOMAINFILE ]; then
-    > ${DOMAINFILE}
+if [ ! -f $PWD$DOMAINFILE ]; then
+    > $PWD${DOMAINFILE}
 fi
-if [ ! -f $IPFILE ]; then
-    > ${IPFILE}
+
+if [ ! -f $PWD$IPFILE ]; then
+    > $PWD${IPFILE}
 fi
+
 FILENAME=$(basename "$0")
 DOMAIN[2]=""
 IP=$(dig @resolver1.opendns.com A myip.opendns.com +short -4)
-nbrRow=$(wc -l < ${DOMAINFILE})
-IPFILEVAL=$(cat ${IPFILE})
+nbrRow=$(wc -l < ${PWD}${DOMAINFILE})
+IPFILEVAL=$(cat ${PWD}${IPFILE})
 
 PWDETC="/etc/apache2/sites-available/"
 PWDVAR="/var/www/"
@@ -126,9 +127,9 @@ if [[ $1 == "" ]]; then
         exit
     fi
 
-    echo ${IP} > ${IPFILE}
+    echo ${IP} > ${PWD}${IPFILE}
     for ((i=1; i<=$nbrRow; i++)); do
-        line=$(head -n $i ${DOMAINFILE} | tail -n 1)
+        line=$(head -n $i ${PWD}${DOMAINFILE} | tail -n 1)
         USERNAME=$(echo -e $line | awk '{print $1}')
         PASSWORD=$(echo -e $line | awk '{print $2}')
         HOSTNAME=$(echo -e $line | awk '{print $3}')
